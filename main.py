@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 lag = 0.1
-x = np.arange(0.0, 2*np.pi+lag, lag)
+x = np.arange(0.0, 4*np.pi+lag, lag)
 y = np.cos(x)
 
 fig = plt.figure()
