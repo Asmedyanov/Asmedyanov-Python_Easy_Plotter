@@ -14,16 +14,18 @@ from libs.binp_parametrs import *  # модуль параметров
 
 class Oscilloscop:  # базовый класс
     def __init__(self, master):
-        self.array_frames = [LabelFrame(master, text=k) for k in names_frames]# массив рамок в окне интерфейса
-        self.array_plots = [Embaded_Plot(
-            self.array_frames[0], k) for k in names_plots]  # массив графиков
-        self.array_parametrs = [Parametr(
-            self.array_frames[1], k) for k in names_parametrs]  # массив параметров
-        self.array_buttons = [Button(self.array_frames[2], text=str(
-            k[0]), command=lambda k=k: k[1](self)) for k in names_commands]  # массив кнопок
+        # массив рамок в окне интерфейса
+        self.array_frames = {k: LabelFrame(
+            master, text=k) for k in names_frames}
+        self.array_plots = {k: Embaded_Plot(
+            self.array_frames["Окно графиков"], names_plots[k]) for k in names_plots.keys()}  # массив графиков
+        self.array_parametrs = {k: Parametr(
+            self.array_frames["Окно параметров"], names_parametrs[k]) for k in names_parametrs.keys()}  # массив параметров
+        self.array_buttons = {k: Button(self.array_frames['Окно команд'], text=str(k),
+                                        command=lambda k=k: names_commands[k][1](self)) for k in names_commands.keys()}  # массив кнопок
         self.full_file_name = ''
-        for k in self.array_buttons:
+        for k in self.array_buttons.values():
             k.pack(fill=BOTH)
-        for k in self.array_frames:
+        for k in self.array_frames.values():
             k.pack(side=LEFT, fill=BOTH)
-        self.array_frames[0].pack(side=TOP, fill=BOTH, expand=1)
+        self.array_frames["Окно графиков"].pack(side=TOP, fill=BOTH, expand=1)
