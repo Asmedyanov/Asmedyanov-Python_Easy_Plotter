@@ -26,14 +26,14 @@ mks = 1.0e6
 
 
 def Add_File(master):
-    file_name = fd.askopenfilename()  # узнать имя файла из диалога
-    master.full_file_name = file_name
+    """Добавить файл на график"""
+    file_name = fd.askopenfilename()  # узнать полное имя файла из диалога
+    master.full_file_name = file_name #записать полное имя файла в 
     short_file_name = file_name.split('/')[-1]
     master.array_parametrs[0].print(
         short_file_name)  # Записать новое имя файла
     cnst.names_plots[0][3] = str(master.array_parametrs[0].input.get())
     master.array_plots[0].tit = cnst.names_plots[0]
-    
     for k in cnst.names_file_masks:
         if fnmatch.fnmatch(short_file_name, k[0]):
             data = k[1](file_name)
@@ -45,5 +45,6 @@ def Add_File(master):
 
 
 def Clear_Plot(master):
+    """Очистить график"""
     for k in master.array_plots:
         k.clear()

@@ -11,4 +11,3 @@ root = Tk() #окно пользовательского интерфейса
 root.wm_title("Python_Easy_Plotter Asmedianov Nikita") #закголовок окна пользовательского интерфейса
 baseobject=bc.Oscilloscop(root)#создание объекта базового класса
 mainloop()
-# EduKudaHochu777

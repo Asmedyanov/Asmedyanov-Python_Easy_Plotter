@@ -14,8 +14,7 @@ from libs.binp_parametrs import *  # модуль параметров
 
 class Oscilloscop:  # базовый класс
     def __init__(self, master):
-        # массив рамок в окне интерфейса
-        self.array_frames = [LabelFrame(master, text=k) for k in names_frames]
+        self.array_frames = [LabelFrame(master, text=k) for k in names_frames]# массив рамок в окне интерфейса
         self.array_plots = [Embaded_Plot(
             self.array_frames[0], k) for k in names_plots]  # массив графиков
         self.array_parametrs = [Parametr(

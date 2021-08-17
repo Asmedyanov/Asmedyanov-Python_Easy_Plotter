@@ -16,115 +16,60 @@ import pandas as pd
 from libs.binp_consts import *
 
 class Embaded_Plot:
+    """Класс графиков, адаптированный по Tkinter"""
     def __init__(self,master,tit):
-        self.data=[]
-        self.is_interactiv=False
-        self.tit=tit
-        self.frame=Frame(master)
-        self.fig =Figure(figsize=(5, 4), dpi=100)
-        t = np.arange(0, 3, .01)
+        self.data=[] # список баз данных
+        self.tit=tit #установка заголовков и подписей
+        self.frame=Frame(master) # Рабочая рамка
+        self.fig =Figure(figsize=(5, 4), dpi=100) #График в рабочей рамке
+        t = np.arange(0, 3, .01) #Шкала времени демонстрационного графика
         self.fig.add_subplot(111,
                              title=str(tit[0]),
                              xlabel=str(tit[1]),
                              ylabel=str(tit[2])
-                             ).plot(t, 2 * np.sin(2 * np.pi * t))
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)  # A tk.DrawingArea.
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2)
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2)
-        self.frame.pack(side=TOP,fill=BOTH,expand=1)
-        self.cursor=0
-        self.ids_interactiv=[]
-        
-        self.current_clicks=[]
-        self.text=Text(self.frame,height=2)
-    
-        
-        
-    
+                             ).plot(t, 2 * np.sin(2 * np.pi * t))# добавление домнстационного графика
+        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)  # A tk.DrawingArea. область рисования
+        self.canvas.draw() #Рисуем график
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2) #расположение области рисования в окне
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame) # Панель навигации (больще/меньше/влево/вправо/сохранить)
+        self.toolbar.update() #Обновить панель навигации
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2) # Расположение панели навигации в окне
+        self.frame.pack(side=TOP,fill=BOTH,expand=1) #Расположение рабочей рамки в окне
     
     def replot(self):
+        """Перестроить график"""
         self.fig.clf()#Очистить график
-        n=len(self.data)
-        subplotarray=np.array(self.fig.subplots(n,sharex=True))
+        n=len(self.data)#Длина массива баз данных каналов
+        subplotarray=np.array(self.fig.subplots(n,sharex=True))# массив графиков
         
         for i in range(n):
-            data_t=self.data[i]
-            self.fig.axes[i].plot(data_t['T'],data_t['V'])
-            self.fig.axes[i].minorticks_on()
+            data_t=self.data[i] # ВрЕменная база данных
+            self.fig.axes[i].plot(data_t['T'],data_t['V']) #Построить каждый канал в соостветствующем графике
+            self.fig.axes[i].minorticks_on() #Включить вспомогательные засечки на шкалах
             
             #  Определяем внешний вид линий основной сетки:
-            self.fig.axes[i].grid(which='major',
-                    color = 'k', 
-                    linewidth = 1)
-            #  Определяем внешний вид линий вспомогательной
-            #  сетки:
-            self.fig.axes[i].grid(which='minor', 
-                    color = 'k', 
-                    linestyle = ':')
+            self.fig.axes[i].grid(
+                which='major', #Основная сетка
+                    color = 'k', #цвет сетки
+                    linewidth = 1) #Ширина линии сетки
+            #  Определяем внешний вид линий вспомогательной сетки:
+            self.fig.axes[i].grid(
+                which='minor', # Вспомогрательная сетка
+                    color = 'k', # Цвет сетки
+                    linestyle = ':') # Пунктирный стиль
             self.fig.axes[i].tick_params(direction='in', top=True, right=True)
-            self.fig.axes[i].set_ylabel(data_t['label'][0])
-        self.fig.axes[n-1].set_xlabel(self.tit[1])
-        self.fig.axes[0].set_title(self.tit[0]+self.tit[3])
-        self.fig.canvas.draw()
+            self.fig.axes[i].set_ylabel(data_t['label'][0]) #Подписать вертикальные оси
+        self.fig.axes[n-1].set_xlabel(self.tit[1]) # Подписать горизонтальную ось
+        self.fig.axes[0].set_title(self.tit[0]+self.tit[3]) # Подписать заголовок
+        self.fig.canvas.draw() #Рисовать график
         
     def plot(self,data):
-        self.data.append(data)
-        return self.replot()
-       
-    def on_move(self,event,master):
-        xdata=str(getattr(event, 'xdata'))
-        if xdata=='None': return
-        master.array_parametrs[2+(self.cursor % 2)].print('%3.2f'%float(xdata))
-    
-    def on_click(self,event,master):
-        xdata=str(getattr(event, 'xdata'))
-        if xdata=='None': return
-        dbl=getattr(event, 'dblclick')
-        if dbl:
-            self.cursor+=1
-            n0=int(len(names_clicks)-1)
-            self.current_clicks.append('%3.2f'%float(xdata))
-            self.text.delete(1.0,END)
-            self.text.insert(1.0,str(self.cursor)+' / '+str(n0))
-            if self.cursor==n0:
-                n=int(len(names_clicks)/3)
-                for i in range(n):
-                    t1=float(self.current_clicks[i])
-                    t2=float(self.current_clicks[i+n])
-                    tcur=abs(t2-t1)
-                    self.current_clicks.append('%3.2f'%tcur)
-                self.data_clicks.loc[len(self.data_clicks)]=self.current_clicks
-                self.text.delete(1.0,END)
-                self.text.insert(1.0,str(self.data_clicks))
-                self.clear_cursor()
-                
-    def clear_cursor(self):
-        self.cursor=0
-        self.current_clicks=[]
-        
-    def activate_interactiv(self,master):
-        if len(self.ids_interactiv)!=0: return
-        id_click=self.fig.canvas.mpl_connect(
-            'button_press_event',
-            lambda event, master=master:
-                self.on_click(event,master))
-        self.ids_interactiv.append(id_click)
-        id_move=self.fig.canvas.mpl_connect(
-            'motion_notify_event',
-            lambda event, master=master:
-                self.on_move(event,master))
-        self.ids_interactiv.append(id_move)
-        self.text.pack(fill=BOTH,expand=1)
+        """Пристроить канал к графику"""
+        self.data.append(data)#добавить таблицу канала в список каналов
+        return self.replot()#Перестроить график
     def clear(self):
-        self.fig.clf()#Очистить первый график
-        self.data=[]
-        self.fig.canvas.draw()
-    def clear_last_click(self):
-        self.clear_cursor()
-        self.data_clicks=self.data_clicks[:-1]
-        self.text.delete(1.0,END)
-        self.text.insert(1.0,str(self.data_clicks))
+        """Очистить график"""
+        self.fig.clf()#Очистить график
+        self.data=[] #Очистить список каналов графика
+        self.fig.canvas.draw() #Нарисовать пустой график
         
