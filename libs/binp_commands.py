@@ -45,5 +45,5 @@ def Add_File(master):
 
 def Clear_Plot(master):
     """Очистить график"""
-    for k in master.array_plots:
+    for k in master.array_plots.values():
         k.clear()
