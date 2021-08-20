@@ -31,7 +31,7 @@ def Add_File(master):
     short_file_name = file_name.split('/')[-1]
     master.array_parametrs["Имя файла"].print(
         short_file_name)  # Записать новое имя файла
-    cnst.names_plots["График файла"][3] = str(master.array_parametrs["Имя файла"].input.get())
+    cnst.names_plots["График файла"]['Префикс'] = str(master.array_parametrs["Имя файла"].input.get())
     master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
     for k in cnst.names_file_masks:
         if fnmatch.fnmatch(short_file_name, k[0]):

@@ -24,9 +24,9 @@ class Embaded_Plot:
         self.fig =Figure(figsize=(5, 4), dpi=100) #График в рабочей рамке
         t = np.arange(0, 3, .01) #Шкала времени демонстрационного графика
         self.fig.add_subplot(111,
-                             title=str(tit[0]),
-                             xlabel=str(tit[1]),
-                             ylabel=str(tit[2])
+                             title=str(tit["Заголовок"]),
+                             xlabel=str(tit['Подпись X']),
+                             ylabel=str(tit['Подпись Y'])
                              ).plot(t, 2 * np.sin(2 * np.pi * t))# добавление домнстационного графика
         self.canvas = FigureCanvasTkAgg(self.fig, self.frame)  # A tk.DrawingArea. область рисования
         self.canvas.draw() #Рисуем график
@@ -59,8 +59,8 @@ class Embaded_Plot:
                     linestyle = ':') # Пунктирный стиль
             self.fig.axes[i].tick_params(direction='in', top=True, right=True)
             self.fig.axes[i].set_ylabel(data_t['label'][0]) #Подписать вертикальные оси
-        self.fig.axes[n-1].set_xlabel(self.tit[1]) # Подписать горизонтальную ось
-        self.fig.axes[0].set_title(self.tit[0]+self.tit[3]) # Подписать заголовок
+        self.fig.axes[n-1].set_xlabel(self.tit['Подпись X']) # Подписать горизонтальную ось
+        self.fig.axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс']) # Подписать заголовок
         self.fig.canvas.draw() #Рисовать график
         
     def plot(self,data):

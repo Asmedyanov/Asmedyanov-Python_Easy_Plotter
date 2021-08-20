@@ -18,11 +18,11 @@ class Oscilloscop:  # базовый класс
         self.array_frames = {k: LabelFrame(
             master, text=k) for k in names_frames}
         self.array_plots = {k: Embaded_Plot(
-            self.array_frames["Окно графиков"], names_plots[k]) for k in names_plots.keys()}  # массив графиков
+            self.array_frames["Окно графиков"], v) for k,v in names_plots.items()}  # массив графиков
         self.array_parametrs = {k: Parametr(
-            self.array_frames["Окно параметров"], names_parametrs[k]) for k in names_parametrs.keys()}  # массив параметров
+            self.array_frames["Окно параметров"], [k]+v) for k,v in names_parametrs.items()}  # массив параметров
         self.array_buttons = {k: Button(self.array_frames['Окно команд'], text=str(k),
-                                        command=lambda k=k: names_commands[k][1](self)) for k in names_commands.keys()}  # массив кнопок
+                                        command=lambda v=v: v(self)) for k,v in names_commands.items()}  # массив кнопок
         self.full_file_name = ''
         for k in self.array_buttons.values():
             k.pack(fill=BOTH)
