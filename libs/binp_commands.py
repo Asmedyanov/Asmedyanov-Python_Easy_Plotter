@@ -38,8 +38,8 @@ def Add_File(master):
             data = k[1](file_name)
             nl = 0
             for d in data:
-                d['label'] = k[2][nl]
-                master.array_plots["График файла"].plot(d)
+                
+                master.array_plots["График файла"].plot(k[2][nl],d)
                 nl += 1
 
 

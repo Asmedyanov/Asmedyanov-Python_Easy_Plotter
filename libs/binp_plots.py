@@ -18,7 +18,7 @@ from libs.binp_consts import *
 class Embaded_Plot:
     """Класс графиков, адаптированный по Tkinter"""
     def __init__(self,master,tit):
-        self.data=[] # список баз данных
+        self.data=dict() # список баз данных
         self.tit=tit #установка заголовков и подписей
         self.frame=Frame(master) # Рабочая рамка
         self.fig =Figure(figsize=(5, 4), dpi=100) #График в рабочей рамке
@@ -42,8 +42,9 @@ class Embaded_Plot:
         n=len(self.data)#Длина массива баз данных каналов
         subplotarray=np.array(self.fig.subplots(n,sharex=True))# массив графиков
         
-        for i in range(n):
-            data_t=self.data[i] # ВрЕменная база данных
+        for k in self.data.keys():
+            data_t=self.data[k] # ВрЕменная база данных
+            i=list(self.data.keys()).index(k)
             self.fig.axes[i].plot(data_t['T'],data_t['V']) #Построить каждый канал в соостветствующем графике
             self.fig.axes[i].minorticks_on() #Включить вспомогательные засечки на шкалах
             
@@ -58,14 +59,14 @@ class Embaded_Plot:
                     color = 'k', # Цвет сетки
                     linestyle = ':') # Пунктирный стиль
             self.fig.axes[i].tick_params(direction='in', top=True, right=True)
-            self.fig.axes[i].set_ylabel(data_t['label'][0]) #Подписать вертикальные оси
+            self.fig.axes[i].set_ylabel(k) #Подписать вертикальные оси
         self.fig.axes[n-1].set_xlabel(self.tit['Подпись X']) # Подписать горизонтальную ось
         self.fig.axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс']) # Подписать заголовок
         self.fig.canvas.draw() #Рисовать график
         
-    def plot(self,data):
+    def plot(self,key,data):
         """Пристроить канал к графику"""
-        self.data.append(data)#добавить таблицу канала в список каналов
+        self.data[key]=data#добавить таблицу канала в список каналов
         return self.replot()#Перестроить график
     def clear(self):
         """Очистить график"""
