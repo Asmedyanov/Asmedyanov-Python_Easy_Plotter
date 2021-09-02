@@ -71,6 +71,6 @@ class Embaded_Plot:
     def clear(self):
         """Очистить график"""
         self.fig.clf()#Очистить график
-        self.data=[] #Очистить список каналов графика
+        self.data=dict() #Очистить список каналов графика
         self.fig.canvas.draw() #Нарисовать пустой график
         
