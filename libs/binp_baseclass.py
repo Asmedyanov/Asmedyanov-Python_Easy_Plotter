@@ -17,8 +17,8 @@ class Oscilloscop:  # базовый класс
         self.menubar=Menu(master)
         self.filemenu=Menu(self.menubar)
         for k in names_commands.keys():
-            self.filemenu.add_command(label=k)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
+            self.filemenu.add_command(label=k, command=lambda k=k: names_commands[k](self))
+        self.menubar.add_cascade(label="Файл", menu=self.filemenu)
         master.config(menu=self.menubar)
         # массив рамок в окне интерфейса
         self.array_frames = {k: LabelFrame(
