@@ -14,6 +14,12 @@ from libs.binp_parametrs import *  # модуль параметров
 
 class Oscilloscop:  # базовый класс
     def __init__(self, master):
+        self.menubar=Menu(master)
+        self.filemenu=Menu(self.menubar)
+        for k in names_commands.keys():
+            self.filemenu.add_command(label=k)
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        master.config(menu=self.menubar)
         # массив рамок в окне интерфейса
         self.array_frames = {k: LabelFrame(
             master, text=k) for k in names_frames}
