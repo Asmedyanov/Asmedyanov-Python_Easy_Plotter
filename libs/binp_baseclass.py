@@ -21,11 +21,10 @@ class Oscilloscop:  # базовый класс
                 label=k,
                 command=lambda k=k: names_commands[k][0](self),
                 accelerator=names_commands[k][1])
-        for k in names_commands.keys():
-            self.filemenu.bind_all(names_commands[k][2],lambda k=k: names_commands[k][0](self))
         self.menubar.add_cascade(label="Файл", menu=self.filemenu)
         master.config(menu=self.menubar)
-        
+        for mykey in names_commands.keys():
+            self.filemenu.bind_all(names_commands[mykey][2],lambda event, mykey=mykey:names_commands[mykey][0](self))
         # массив рамок в окне интерфейса
         self.array_frames = {k: LabelFrame(
             master, text=k) for k in names_frames}
@@ -37,6 +36,5 @@ class Oscilloscop:  # базовый класс
         for k in self.array_frames.values():
             k.pack(side=LEFT, fill=BOTH)
         self.array_frames["Окно графиков"].pack(side=TOP, fill=BOTH, expand=1)
-    def donothing(self,master):
-        print("Ничего")
-        ...
+    def donothing(self,event):
+        print("Я работаю, а ты?")
