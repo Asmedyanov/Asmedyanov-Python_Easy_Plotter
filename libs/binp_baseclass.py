@@ -36,5 +36,3 @@ class Oscilloscop:  # базовый класс
         for k in self.array_frames.values():
             k.pack(side=LEFT, fill=BOTH)
         self.array_frames["Окно графиков"].pack(side=TOP, fill=BOTH, expand=1)
-    def donothing(self,event):
-        print("Я работаю, а ты?")

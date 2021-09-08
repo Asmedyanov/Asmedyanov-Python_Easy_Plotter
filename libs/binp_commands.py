@@ -38,7 +38,7 @@ def Add_File(master):
             data = k[1](file_name)
             nl = 0
             for d in data:
-                
+                d=Data_cut(master,d)
                 master.array_plots["График файла"].plot(k[2][nl],d)
                 nl += 1
 
@@ -47,3 +47,10 @@ def Clear_Plot(master):
     """Очистить график"""
     for k in master.array_plots.values():
         k.clear()
+
+def Data_cut(master,d):
+    left_border=float(master.array_parametrs["Граница слева"].input.get())
+    right_border=float(master.array_parametrs["Граница справа"].input.get())
+    ret=d.loc[((d['T']>left_border)&(d['T']<right_border))]
+    ret.index=np.arange(len(ret))
+    return ret
