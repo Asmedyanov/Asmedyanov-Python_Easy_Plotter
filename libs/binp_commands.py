@@ -41,6 +41,7 @@ def Add_File(master):
                 d=Data_cut(master,d)
                 master.array_plots["График файла"].plot(k[2][nl],d)
                 nl += 1
+    master.array_plots["График файла"].replot()
 
 
 def Clear_Plot(master):
@@ -51,6 +52,19 @@ def Clear_Plot(master):
 def Data_cut(master,d):
     left_border=float(master.array_parametrs["Граница слева"].input.get())
     right_border=float(master.array_parametrs["Граница справа"].input.get())
+    if ((d['T'][1]>left_border)&(d['T'][1]<right_border)):
+        return d
     ret=d.loc[((d['T']>left_border)&(d['T']<right_border))]
     ret.index=np.arange(len(ret))
     return ret
+
+def Smooth_Plot(master):
+    smoothw=float(master.array_parametrs["Ширина сглаживания"].input.get())
+    for mykey in master.array_plots["График файла"].data.keys():
+        dt=np.gradient(master.array_plots["График файла"].data[mykey]['T']).mean()
+        master.array_plots["График файла"].data[mykey]['T']=master.array_plots["График файла"].data[mykey]['T'].rolling(int(smoothw/dt)).mean()#+0.5*smoothw
+        master.array_plots["График файла"].data[mykey]['V']=master.array_plots["График файла"].data[mykey]['V'].rolling(int(smoothw/dt)).mean()
+        master.array_plots["График файла"].data[mykey]['V'].dropna()
+        master.array_plots["График файла"].data[mykey].index=np.arange(len(master.array_plots["График файла"].data[mykey]))
+    master.array_plots["График файла"].replot()
+    

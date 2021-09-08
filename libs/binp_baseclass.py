@@ -15,16 +15,28 @@ from libs.binp_parametrs import *  # модуль параметров
 class Oscilloscop:  # базовый класс
     def __init__(self, master):
         self.menubar=Menu(master)
+
         self.filemenu=Menu(self.menubar)
-        for k in names_commands.keys():
+        for k in names_commands_file.keys():
             self.filemenu.add_command(
                 label=k,
-                command=lambda k=k: names_commands[k][0](self),
-                accelerator=names_commands[k][1])
+                command=lambda k=k: names_commands_file[k][0](self),
+                accelerator=names_commands_file[k][1])
         self.menubar.add_cascade(label="Файл", menu=self.filemenu)
+
+        self.plotmenu=Menu(self.menubar)
+        for k in names_commands_plot.keys():
+            self.plotmenu.add_command(
+                label=k,
+                command=lambda k=k: names_commands_plot[k][0](self),
+                accelerator=names_commands_plot[k][1])
+        self.menubar.add_cascade(label="График", menu=self.plotmenu)
+
         master.config(menu=self.menubar)
-        for mykey in names_commands.keys():
-            self.filemenu.bind_all(names_commands[mykey][2],lambda event, mykey=mykey:names_commands[mykey][0](self))
+        for mykey in names_commands_file.keys():
+            self.filemenu.bind_all(names_commands_file[mykey][2],lambda event, mykey=mykey:names_commands_file[mykey][0](self))
+        for mykey in names_commands_plot.keys():
+            self.plotmenu.bind_all(names_commands_plot[mykey][2],lambda event, mykey=mykey:names_commands_plot[mykey][0](self))
         # массив рамок в окне интерфейса
         self.array_frames = {k: LabelFrame(
             master, text=k) for k in names_frames}

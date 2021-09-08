@@ -67,7 +67,7 @@ class Embaded_Plot:
     def plot(self,key,data):
         """Пристроить канал к графику"""
         self.data[key]=data#добавить таблицу канала в список каналов
-        return self.replot()#Перестроить график
+        #return self.replot()#Перестроить график
     def clear(self):
         """Очистить график"""
         self.fig.clf()#Очистить график

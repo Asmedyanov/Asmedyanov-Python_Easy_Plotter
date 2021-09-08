@@ -79,7 +79,7 @@ def Open_PRN(a):
             data_t['T'] = data['T']
             data_t['V'] = data['CH'+str(k+1)]
             data_ret.append(data_t)
-    return [data_ret[0]]  # ,data_ret[1]]
+    return [data_ret[0],data_ret[1],data_ret[2]]  # ,data_ret[1]]
 
 
 def Open_bin(a):
