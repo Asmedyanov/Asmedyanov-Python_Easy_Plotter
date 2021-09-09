@@ -19,29 +19,19 @@ def Open_A_CSV(a):
     """
     Открытие файла типа A*.CSV по строке a
     """
-    #data=pd.read_csv(a,skiprows=2,error_bad_lines=False,names=['T', 'V1','V2','V3','V4'])
     data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
-                       names=['T', 'V1', 'V2', 'V4'])
-    #data=pd.read_csv(a,skiprows=2,error_bad_lines=False,names=['T', 'V1','V2'],warn_bad_lines=True,encoding='iso-8859-1')
-    stmin = data['V2'].min()
-    stmax = data['V2'].max()
+                       names=['T', 'V1', 'V2'])
+    stmin = data['V1'].min()
+    stmax = data['V1'].max()
     st = 0.5*(stmax-stmin)
-    t0 = data['T'].loc[data['V2'] < st].values.min()*1.0e6
+    t0 = data['T'].loc[data['V1'] < st].values.min()*1.0e6
     data1 = pd.DataFrame()
-    data1['T'] = data['T']*1.0e6-t0  # -10.0
+    data1['T'] = data['T']*1.0e6-t0
     data1['V'] = data['V1']
     data2 = pd.DataFrame()
     data2['T'] = data['T']*1.0e6-t0
     data2['V'] = data['V2']
-    '''data3=pd.DataFrame()
-    data3['T']=data['T']*1.0e6-t0
-    data3['V']=data['V3']*21120.0*1.0e-3'''
-    data4 = pd.DataFrame()
-    data4['T'] = data['T']*1.0e6-t0
-    data4['V'] = -data['V4']
-    return [data1, data4]
-    # return [data1]
-
+    return [data1, data2]
 
 def Open_F_CSV(a):
     """

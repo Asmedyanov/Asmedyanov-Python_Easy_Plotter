@@ -10,7 +10,7 @@ from libs.binp_datas import *
 
 # типы используемых файлов: [Маска,Функция открытия,Подписи к легенде]
 names_file_masks = [
-    ['A*.CSV', Open_A_CSV, ['P, V', 'Tr 2, V']],
+    ['A*.CSV', Open_A_CSV, ['Запуск','Давление']],
     ['F*CH1.CSV', Open_F_CSV, ['I, V']],
     ['T*.CSV', Open_F_CSV, ['I, V']],
     ['*.PRN', Open_PRN, ['Запуск','Ток', ' Ток 2']],
