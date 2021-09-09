@@ -36,6 +36,7 @@ names_parametrs = {
 names_commands_file = {
     'Добавит файл': [Add_File, "Ctrl+O","<Control-o>"],
     'Группировать папку по выстрелам': [Group_directory, "Ctrl+G","<Control-g>"],
+    'Добавить папку': [Add_directory, "Ctrl+A","<Control-a>"],
 }
 
 names_commands_plot = {

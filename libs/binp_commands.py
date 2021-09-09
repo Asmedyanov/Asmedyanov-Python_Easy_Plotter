@@ -39,7 +39,7 @@ def Add_File(master):
             nl = 0
             for d in data:
                 d=Data_cut(master,d)
-                master.array_plots["График файла"].plot(k[2][nl]+short_file_name,d)
+                master.array_plots["График файла"].plot(k[2][nl]+' '+short_file_name,d)
                 nl += 1
     master.array_plots["График файла"].replot()
 
@@ -88,3 +88,24 @@ def Group_directory(master):
             continue
         os.makedirs('V'+str(n_exper), exist_ok=True)
         os.rename(name, 'V'+str(n_exper)+'/'+name)
+
+def Add_directory(master):
+    file_name = fd.askopenfilename()  # узнать имя файла из диалога
+    master.full_file_name = file_name
+    short_file_name = file_name.split('/')[-1]
+    master.array_parametrs["Имя файла"].print(
+        short_file_name)  # Записать новое имя файла
+    dir_name = get_dir(file_name)
+    os.chdir(dir_name)
+    cnst.names_plots["График файла"]['Префикс'] = str(master.array_parametrs["Имя файла"].input.get())
+    master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
+    for t_name in os.listdir():
+        for k in cnst.names_file_masks:
+            if fnmatch.fnmatch(t_name, k[0]):
+                data = k[1](t_name)
+                nl = 0
+                for d in data:
+                    d=Data_cut(master,d)
+                    master.array_plots["График файла"].plot(k[2][nl]+' '+short_file_name,d)
+                    nl += 1
+    master.array_plots["График файла"].replot()
