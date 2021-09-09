@@ -50,6 +50,9 @@ class Embaded_Plot:
             self.fig.axes[0].plot(v['T'],v['V'],label=k)
         self.fig.axes[0].legend()
         self.fig.axes[0].grid()
+        self.fig.axes[0].set_xlabel(self.tit['Подпись X']) # Подписать горизонтальную ось
+        self.fig.axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс']) # Подписать заголовок
+        self.fig.axes[0].set_ylabel("У. Е.") #Подписать вертикальные оси
         self.fig.canvas.draw()
         
         
