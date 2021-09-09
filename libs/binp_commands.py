@@ -64,7 +64,7 @@ def Smooth_Plot(master):
         dt=np.gradient(master.array_plots["График файла"].data[mykey]['T']).mean()
         master.array_plots["График файла"].data[mykey]['T']=master.array_plots["График файла"].data[mykey]['T'].rolling(int(smoothw/dt)).mean()#+0.5*smoothw
         master.array_plots["График файла"].data[mykey]['V']=master.array_plots["График файла"].data[mykey]['V'].rolling(int(smoothw/dt)).mean()
-        master.array_plots["График файла"].data[mykey]['V'].dropna()
+        master.array_plots["График файла"].data[mykey]=master.array_plots["График файла"].data[mykey].dropna()
         master.array_plots["График файла"].data[mykey].index=np.arange(len(master.array_plots["График файла"].data[mykey]))
     master.array_plots["График файла"].replot()
     
