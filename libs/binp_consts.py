@@ -23,7 +23,7 @@ names_frames = [
     'Окно параметров'
 ]
 names_checks = {
-    'Наложение графиков': [Replot_all,False]
+    'Наложение графиков': [Stack_or_legend_plot,False]
 }
 # Наименования параметров: Название: [Название, Значение по умолчанию, Размерность]
 names_parametrs = {
@@ -35,6 +35,7 @@ names_parametrs = {
 # Наименования команд: Название: [Название,Функция]
 names_commands_file = {
     'Добавит файл': [Add_File, "Ctrl+O","<Control-o>"],
+    'Группировать папку по выстрелам': [Group_directory, "Ctrl+G","<Control-g>"],
 }
 
 names_commands_plot = {
