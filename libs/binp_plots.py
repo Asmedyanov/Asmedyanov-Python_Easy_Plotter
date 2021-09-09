@@ -36,6 +36,7 @@ class Embaded_Plot:
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2) # Расположение панели навигации в окне
         self.frame.pack(side=TOP,fill=BOTH,expand=1) #Расположение рабочей рамки в окне
         self.is_stack=True
+        self.have_start=False
     
     def replot(self):
         if self.is_stack:
@@ -84,11 +85,19 @@ class Embaded_Plot:
         self.fig.axes[n-1].set_xlabel(self.tit['Подпись X']) # Подписать горизонтальную ось
         self.fig.axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс']) # Подписать заголовок
         self.fig.canvas.draw() #Рисовать график
-        
     def plot(self,key,data):
+        if self.have_start:
+            self.plot_all(key,data)
+        else:
+            self.plot_no_start(key,data)
+    
+    def plot_no_start(self,key,data):
+        """Пристроить канал к графику"""
+        if key.split(' ')[0]=="Запуск": return
+        self.data[key]=data#добавить таблицу канала в список каналов
+    def plot_all(self,key,data):
         """Пристроить канал к графику"""
         self.data[key]=data#добавить таблицу канала в список каналов
-        #return self.replot()#Перестроить график
     def clear(self):
         """Очистить график"""
         self.fig.clf()#Очистить график

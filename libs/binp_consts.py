@@ -10,10 +10,10 @@ from libs.binp_datas import *
 
 # типы используемых файлов: [Маска,Функция открытия,Подписи к легенде]
 names_file_masks = [
-    ['A*.CSV', Open_A_CSV, ['S','P, V']],
+    ['A*.CSV', Open_A_CSV, ['Запуск','P, V']],
     ['F*CH1.CSV', Open_F_CSV, ['I, V']],
     ['T*.CSV', Open_F_CSV, ['I, V']],
-    ['*.PRN', Open_PRN, ['S','I, V', 'I 2, V']],
+    ['*.PRN', Open_PRN, ['Запуск','I, V']],
     ['*.bin', Open_bin, ['ne, V', 'U, kV', 'I, kA', 'Tr 1, %', 'Tr 2, %']],
 ]
 
@@ -23,7 +23,8 @@ names_frames = [
     'Окно параметров'
 ]
 names_checks = {
-    'Наложение графиков': [Stack_or_legend_plot,False]
+    'Наложение графиков': Stack_or_legend_plot,
+    'Вывод стартов': Start_or_No_Start_plot
 }
 # Наименования параметров: Название: [Название, Значение по умолчанию, Размерность]
 names_parametrs = {

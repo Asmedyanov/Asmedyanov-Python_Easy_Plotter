@@ -106,6 +106,14 @@ def Add_directory(master):
                 nl = 0
                 for d in data:
                     d=Data_cut(master,d)
-                    master.array_plots["График файла"].plot(k[2][nl]+' '+short_file_name,d)
+                    master.array_plots["График файла"].plot(k[2][nl]+' '+t_name.split('/')[-1],d)
                     nl += 1
+    master.array_plots["График файла"].replot()
+
+def Start_or_No_Start_plot(master):
+    master.array_plots["График файла"].have_start=master.check_values['Вывод стартов'].get()
+    data_t=master.array_plots["График файла"].data
+    master.array_plots["График файла"].clear()
+    for k,v in data_t.items():
+        master.array_plots["График файла"].plot(k,v)
     master.array_plots["График файла"].replot()
