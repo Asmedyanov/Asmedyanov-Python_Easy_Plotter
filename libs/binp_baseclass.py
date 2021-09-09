@@ -44,9 +44,12 @@ class Oscilloscop:  # базовый класс
             self.array_frames["Окно графиков"], v) for k,v in names_plots.items()}  # массив графиков
         self.array_parametrs = {k: Parametr(
             self.array_frames["Окно параметров"], [k]+v) for k,v in names_parametrs.items()}  # массив параметров
+        self.check_values={k: IntVar(0) for k in names_checks.keys()}
         self.array_checks={k: Checkbutton(
-            self.array_frames["Окно параметров"],text=k
-        ) for k in names_checks}
+            self.array_frames["Окно параметров"],text=k, command=lambda v=v:v[0](self), variable=self.check_values[k]
+        ) for k,v in names_checks.items()}
+        for k in self.array_checks.values():
+            k.pack(side=LEFT,fill=X)
         self.full_file_name = ''
         for k in self.array_frames.values():
             k.pack(side=LEFT, fill=BOTH)

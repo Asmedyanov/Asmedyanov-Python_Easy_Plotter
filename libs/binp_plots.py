@@ -35,11 +35,29 @@ class Embaded_Plot:
         self.toolbar.update() #Обновить панель навигации
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=2) # Расположение панели навигации в окне
         self.frame.pack(side=TOP,fill=BOTH,expand=1) #Расположение рабочей рамки в окне
+        self.is_stack=True
     
     def replot(self):
+        if self.is_stack:
+            self.replot_stack()
+        else:
+            self.replot_legend()
+    def replot_legend(self):
+        """Перестроить график"""
+        self.fig.clf()#Очистить график
+        self.fig.subplots(1)
+        for k,v in self.data.items():
+            self.fig.axes[0].plot(v['T'],v['V'],label=k)
+        self.fig.axes[0].legend()
+        self.fig.axes[0].grid()
+        self.fig.canvas.draw()
+        
+        
+    def replot_stack(self):
         """Перестроить график"""
         self.fig.clf()#Очистить график
         n=len(self.data)#Длина массива баз данных каналов
+        if (n==0): return
         subplotarray=np.array(self.fig.subplots(n,sharex=True))# массив графиков
         
         for k in self.data.keys():

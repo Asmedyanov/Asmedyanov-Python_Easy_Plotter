@@ -39,7 +39,7 @@ def Add_File(master):
             nl = 0
             for d in data:
                 d=Data_cut(master,d)
-                master.array_plots["График файла"].plot(k[2][nl],d)
+                master.array_plots["График файла"].plot(k[2][nl]+short_file_name,d)
                 nl += 1
     master.array_plots["График файла"].replot()
 
@@ -66,5 +66,9 @@ def Smooth_Plot(master):
         master.array_plots["График файла"].data[mykey]['V']=master.array_plots["График файла"].data[mykey]['V'].rolling(int(smoothw/dt)).mean()
         master.array_plots["График файла"].data[mykey]=master.array_plots["График файла"].data[mykey].dropna()
         master.array_plots["График файла"].data[mykey].index=np.arange(len(master.array_plots["График файла"].data[mykey]))
+    master.array_plots["График файла"].replot()
+
+def Replot_all(master):
+    master.array_plots["График файла"].is_stack=master.check_values['Наложение графиков'].get()
     master.array_plots["График файла"].replot()
     
