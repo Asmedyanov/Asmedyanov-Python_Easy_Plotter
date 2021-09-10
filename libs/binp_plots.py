@@ -62,6 +62,9 @@ class Embaded_Plot:
         self.fig.clf()#Очистить график
         n=len(self.data)#Длина массива баз данных каналов
         if (n==0): return
+        if (n==1):
+            self.replot_legend()
+            return
         gs = self.fig.add_gridspec(n, hspace=0.05)
         axes=gs.subplots(sharex=True)# массив графиков
         
