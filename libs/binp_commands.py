@@ -192,3 +192,14 @@ def Process_directory(master):
     stattable.to_csv('Statist.txt', sep=' ')
 
     os.chdir(dir_outer)
+
+def Norm_Plot(master):
+    data=master.array_plots["График файла"].data
+    master.array_plots["График файла"].clear()
+    for k,v in data.items():
+        v['V']=v['V']-v['V'].loc[v['T']<0].mean()
+        maxv=np.abs(v['V']).max()
+        v['V']=100.0*v['V']/maxv
+        data[k]=v
+        master.array_plots["График файла"].plot(k+' %',v)
+    master.array_plots["График файла"].replot()

@@ -44,6 +44,7 @@ names_commands_file = {
 names_commands_plot = {
     'Очистить график': [Clear_Plot, "Ctrl+0","<Control-0>"],
     'Сгладить график': [Smooth_Plot, "Ctrl+F","<Control-f>"],
+    'Нормировать на себя график': [Norm_Plot, "Ctrl+N","<Control-n>"],
 }
 
 # Наименование графиков: [Название, Подпись по Х, Подпись по Y]
