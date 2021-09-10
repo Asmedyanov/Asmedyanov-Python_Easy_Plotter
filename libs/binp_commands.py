@@ -117,3 +117,78 @@ def Start_or_No_Start_plot(master):
     for k,v in data_t.items():
         master.array_plots["График файла"].plot(k,v)
     master.array_plots["График файла"].replot()
+
+def Process_directory(master):
+    # Открыть папку с выстрелами
+    file_name = fd.askopenfilename()  # узнать имя файла из диалога
+    master.full_file_name = file_name
+    dir_path = file_name.split('/')
+    dir_outer = '/'.join(dir_path[:-2])
+
+    os.chdir(dir_outer)
+    # Создать папку PHOTO
+    os.makedirs('PHOTO', exist_ok=True)
+    os.makedirs('STAT', exist_ok=True)
+
+    # Составить список выстрелов
+    Numarray=[]
+
+    Current_length_array=[]
+    Current_position_array=[]
+    Pressure_pic_amplitude_array=[]
+    Pressure_pic_time_array=[]
+
+   
+    for folder_name in os.listdir():
+        numlist = re.findall(r'\d+', folder_name)
+        if len(numlist) == 0:
+            continue
+        Numarray.append(int(numlist[0]))
+        print(numlist[0])
+        os.chdir(folder_name)
+        cnst.names_plots["График файла"]['Префикс'] = folder_name.split('/')[-1]
+        master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
+        for t_name in os.listdir():
+            for k in cnst.names_file_masks:
+                if fnmatch.fnmatch(t_name, k[0]):
+                    data = k[1](t_name)
+                    nl = 0
+                    for d in data:
+                        d=Data_cut(master,d)
+                        master.array_plots["График файла"].plot(k[2][nl]+' '+t_name.split('/')[-1],d)
+                        nl += 1
+        Smooth_Plot(master)
+        t_data=master.array_plots["График файла"].data
+        for key,v in t_data.items():
+            if key[0]=='I':
+                When_Current=v.loc[v['V']>1]
+                if len(When_Current)==0:
+                    Current_position_array.append(0)
+                    Current_length_array.append(0)
+                else:
+                    Current_position_array.append(When_Current['T'].min())
+                    Current_length_array.append(When_Current['T'].max()-When_Current['T'].min())
+            if key[0]=='P':
+                When_Pressure=v.loc[((v['T']>2000)&(v['T']<8000))]
+                Pressure_pic_amplitude=float(np.max(When_Pressure['V']))
+                Pressure_pic_amplitude_array.append(Pressure_pic_amplitude)
+                Pressure_pic_time=When_Pressure['T'].loc[When_Pressure['V']==Pressure_pic_amplitude].mean()
+                Pressure_pic_time_array.append(float(Pressure_pic_time))
+
+
+        os.chdir(dir_outer+'/PHOTO')
+        master.array_plots["График файла"].fig.savefig(folder_name)
+        Clear_Plot(master)
+        os.chdir(dir_outer)
+
+    # создадим таблицу статистики
+    stattable = pd.DataFrame()
+    stattable['Numarray'] = Numarray
+    stattable['Current_position'] = Current_position_array
+    stattable['Current_length'] = Current_length_array
+    stattable['Pressure_pic_amplitude'] = Pressure_pic_amplitude_array
+    stattable['Pressure_pic_time'] = Pressure_pic_time_array
+    os.chdir(dir_outer+'/STAT')
+    stattable.to_csv('Statist.txt', sep=' ')
+
+    os.chdir(dir_outer)
