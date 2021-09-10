@@ -23,8 +23,9 @@ names_frames = [
     'Окно параметров'
 ]
 names_checks = {
-    'Наложение графиков': Stack_or_legend_plot,
-    'Вывод стартов': Start_or_No_Start_plot
+    'Наложение': Stack_or_legend_plot,
+    'Стартовые': Start_or_No_Start_plot,
+    'Интерактивность': Interactive_or_No_Interactive_plot
 }
 # Наименования параметров: Название: [Название, Значение по умолчанию, Размерность]
 names_parametrs = {

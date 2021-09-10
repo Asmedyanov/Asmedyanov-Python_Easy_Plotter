@@ -88,7 +88,7 @@ def Smooth_Plot(master):
 
 def Stack_or_legend_plot(master):
     master.array_plots["График файла"].is_stack = not(
-        master.check_values['Наложение графиков'].get())
+        master.check_values['Наложение'].get())
     master.array_plots["График файла"].replot()
 
 
@@ -124,7 +124,7 @@ def Add_directory(master):
 
 
 def Start_or_No_Start_plot(master):
-    master.array_plots["График файла"].have_start = master.check_values['Вывод стартов'].get()
+    master.array_plots["График файла"].have_start = master.check_values['Стартовые'].get()
     data_t = master.array_plots["График файла"].data
     master.array_plots["График файла"].clear()
     for k, v in data_t.items():
@@ -196,7 +196,6 @@ def Process_directory(master):
     stattable['Pressure_pic_time'] = Pressure_pic_time_array
     os.chdir(dir_outer+'/STAT')
     stattable.to_csv('Statist.txt', sep=' ')
-
     os.chdir(dir_outer)
 
 
@@ -210,3 +209,7 @@ def Norm_Plot(master):
         data[k] = v
         master.array_plots["График файла"].plot(k+' %', v)
     master.array_plots["График файла"].replot()
+
+def Interactive_or_No_Interactive_plot(master):
+    master.array_plots["График файла"].interactive_flag = master.check_values['Интерактивность'].get()
+    master.array_plots["График файла"].activate_interactiv(master)
