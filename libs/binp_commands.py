@@ -69,7 +69,7 @@ def Smooth_Plot(master):
     master.array_plots["График файла"].replot()
 
 def Stack_or_legend_plot(master):
-    master.array_plots["График файла"].is_stack=master.check_values['Наложение графиков'].get()
+    master.array_plots["График файла"].is_stack=not(master.check_values['Наложение графиков'].get())
     master.array_plots["График файла"].replot()
 
 def get_dir(a):
