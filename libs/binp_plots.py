@@ -48,6 +48,7 @@ class Embaded_Plot:
         self.textlist = []
 
     def replot(self):
+        self.clear_annotations()
         if self.is_stack:
             self.replot_stack()
         else:

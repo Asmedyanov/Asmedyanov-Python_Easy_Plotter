@@ -125,12 +125,44 @@ def Add_directory(master):
 
 def Start_or_No_Start_plot(master):
     master.array_plots["График файла"].have_start = master.check_values['Стартовые'].get()
-    
+
     data_t = master.array_plots["График файла"].data
     master.array_plots["График файла"].clear()
     for k, v in data_t.items():
         master.array_plots["График файла"].plot(k, v)
     master.array_plots["График файла"].replot()
+
+def Process_data_pmi27(data,dataout):
+    for key, v in data.items():
+            if key[0] == 'I':
+                When_Current = v.loc[v['V'] > 1]
+                if len(When_Current) == 0:
+                    dataout["Current_position"].append(0)
+                    dataout["Current_length"].append(0)
+                else:
+                    dataout["Current_position"].append(When_Current['T'].min())
+                    dataout["Current_length"].append(
+                        When_Current['T'].max()-When_Current['T'].min())
+            if key[0] == 'P':
+                When_Pressure = v.loc[((v['T'] > 2000) & (v['T'] < 8000))]
+                Pressure_pic_amplitude=np.max(When_Pressure['V'])
+                dataout['Pressure_pic_amplitude'].append(Pressure_pic_amplitude)
+                Pressure_pic_time = When_Pressure['T'].loc[When_Pressure['V']
+                                                           == Pressure_pic_amplitude].min()
+                dataout['Pressure_pic_time'].append(float(Pressure_pic_time))
+
+def Process_plot_pmi27(stattable, master):
+    argument_key='Current_position'
+    function_keys=['Pressure_pic_amplitude','Pressure_pic_time']
+    stattable= stattable.sort_values(argument_key)
+    for mykey in function_keys:
+        data=pd.DataFrame()
+        data['T']=stattable[argument_key]
+        data['V']=stattable[mykey]
+        master.array_plots["График файла"].plot(mykey, data)
+    master.array_plots["График файла"].replot()
+    
+        
 
 
 def Process_directory(master):
@@ -146,43 +178,21 @@ def Process_directory(master):
     os.makedirs('STAT', exist_ok=True)
 
     # Составить список выстрелов
-    Numarray = []
-
-    Current_length_array = []
-    Current_position_array = []
-    Pressure_pic_amplitude_array = []
-    Pressure_pic_time_array = []
+    dataout_heads=['Num','Current_length','Current_position','Pressure_pic_amplitude','Pressure_pic_time']
+    dataout={mykey:[] for mykey in dataout_heads}
 
     for folder_name in os.listdir():
         numlist = re.findall(r'\d+', folder_name)
         if len(numlist) == 0:
             continue
-        Numarray.append(int(numlist[0]))
+        dataout['Num'].append(int(numlist[0]))
         print(numlist[0])
         cnst.names_plots["График файла"]['Префикс'] = folder_name.split(
             '/')[-1]
         master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
         Add_directory_str(master,folder_name)
         Smooth_Plot(master)
-        t_data = master.array_plots["График файла"].data
-        for key, v in t_data.items():
-            if key[0] == 'I':
-                When_Current = v.loc[v['V'] > 1]
-                if len(When_Current) == 0:
-                    Current_position_array.append(0)
-                    Current_length_array.append(0)
-                else:
-                    Current_position_array.append(When_Current['T'].min())
-                    Current_length_array.append(
-                        When_Current['T'].max()-When_Current['T'].min())
-            if key[0] == 'P':
-                When_Pressure = v.loc[((v['T'] > 2000) & (v['T'] < 8000))]
-                Pressure_pic_amplitude = float(np.max(When_Pressure['V']))
-                Pressure_pic_amplitude_array.append(Pressure_pic_amplitude)
-                Pressure_pic_time = When_Pressure['T'].loc[When_Pressure['V']
-                                                           == Pressure_pic_amplitude].mean()
-                Pressure_pic_time_array.append(float(Pressure_pic_time))
-
+        Process_data_pmi27(master.array_plots["График файла"].data,dataout)
         os.chdir(dir_outer+'/PHOTO')
         master.array_plots["График файла"].fig.savefig(folder_name)
         Clear_Plot(master)
@@ -190,11 +200,9 @@ def Process_directory(master):
 
     # создадим таблицу статистики
     stattable = pd.DataFrame()
-    stattable['Numarray'] = Numarray
-    stattable['Current_position'] = Current_position_array
-    stattable['Current_length'] = Current_length_array
-    stattable['Pressure_pic_amplitude'] = Pressure_pic_amplitude_array
-    stattable['Pressure_pic_time'] = Pressure_pic_time_array
+    for mykey in dataout_heads:
+        stattable[mykey]=dataout[mykey]
+    Process_plot_pmi27(stattable, master)
     os.chdir(dir_outer+'/STAT')
     stattable.to_csv('Statist.txt', sep=' ')
     os.chdir(dir_outer)
