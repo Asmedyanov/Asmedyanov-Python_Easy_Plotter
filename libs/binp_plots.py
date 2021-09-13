@@ -151,6 +151,7 @@ class Embaded_Plot:
                 self.on_click(event, master))
 
     def on_click(self, event, master):
+        if event.dblclick!=1:return
         xdata = float(getattr(event, 'xdata'))
         ydata = float(getattr(event, 'ydata'))
         outputstring = '( %3.2e , %3.2e )' % (xdata, ydata)

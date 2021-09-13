@@ -125,6 +125,7 @@ def Add_directory(master):
 
 def Start_or_No_Start_plot(master):
     master.array_plots["График файла"].have_start = master.check_values['Стартовые'].get()
+    
     data_t = master.array_plots["График файла"].data
     master.array_plots["График файла"].clear()
     for k, v in data_t.items():
