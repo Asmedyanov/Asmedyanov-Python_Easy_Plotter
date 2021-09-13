@@ -66,6 +66,7 @@ class Embaded_Plot:
         self.fig.axes[0].set_title(
             self.tit["Заголовок"]+self.tit['Префикс'])  # Подписать заголовок
         self.fig.axes[0].set_ylabel("У. Е.")  # Подписать вертикальные оси
+        self.fig.axes[0].ticklabel_format(style='sci')
         self.fig.canvas.draw()
 
     def replot_stack(self):
@@ -100,10 +101,12 @@ class Embaded_Plot:
                 linestyle=':')  # Пунктирный стиль
             axes[i].tick_params(direction='in', top=True, right=True)
             axes[i].set_ylabel(k)  # Подписать вертикальные оси
+            axes[i].ticklabel_format(style='sci')
         # Подписать горизонтальную ось
         axes[n-1].set_xlabel(self.tit['Подпись X'])
         # Подписать заголовок
         axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс'])
+        
         self.fig.canvas.draw()  # Рисовать график
 
     def plot(self, key, data):
@@ -138,9 +141,9 @@ class Embaded_Plot:
             self.fig.canvas.draw()
             return
         self.textlist = []
-        for axis in self.fig.axes:
-            self.textlist.append(axis.text(0, 0, "Interactive"))
-        self.fig.canvas.draw()
+        #for axis in self.fig.axes:
+            #self.textlist.append(axis.text(0, 0, "Interactive"))
+        #self.fig.canvas.draw()
         # Рисовать график
         self.id_click = self.fig.canvas.mpl_connect(
             'button_press_event',
@@ -150,8 +153,7 @@ class Embaded_Plot:
     def on_click(self, event, master):
         xdata = float(getattr(event, 'xdata'))
         ydata = float(getattr(event, 'ydata'))
-        outputstring = 'X = '+str(np.round(xdata, 1)) + \
-            ' Y = '+str(np.round(ydata, 1))
+        outputstring='(%3.2e,%3.2e)'%(xdata,ydata)
         for axis in self.fig.axes:
             if axis == event.inaxes:
                 self.textlist.append(axis.text(xdata, ydata,outputstring))
