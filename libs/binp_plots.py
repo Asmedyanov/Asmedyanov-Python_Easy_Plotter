@@ -106,7 +106,7 @@ class Embaded_Plot:
         axes[n-1].set_xlabel(self.tit['Подпись X'])
         # Подписать заголовок
         axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс'])
-        
+
         self.fig.canvas.draw()  # Рисовать график
 
     def plot(self, key, data):
@@ -141,9 +141,9 @@ class Embaded_Plot:
             self.fig.canvas.draw()
             return
         self.textlist = []
-        #for axis in self.fig.axes:
-            #self.textlist.append(axis.text(0, 0, "Interactive"))
-        #self.fig.canvas.draw()
+        # for axis in self.fig.axes:
+        #self.textlist.append(axis.text(0, 0, "Interactive"))
+        # self.fig.canvas.draw()
         # Рисовать график
         self.id_click = self.fig.canvas.mpl_connect(
             'button_press_event',
@@ -153,8 +153,16 @@ class Embaded_Plot:
     def on_click(self, event, master):
         xdata = float(getattr(event, 'xdata'))
         ydata = float(getattr(event, 'ydata'))
-        outputstring='(%3.2e,%3.2e)'%(xdata,ydata)
+        outputstring = '( %3.2e , %3.2e )' % (xdata, ydata)
         for axis in self.fig.axes:
             if axis == event.inaxes:
-                self.textlist.append(axis.text(xdata, ydata,outputstring))
+                labelshiftx=(axis.get_xlim()[1]-axis.get_xlim()[0])*0.05
+                labelshifty=(axis.get_ylim()[1]-axis.get_ylim()[0])*0.05
+                self.textlist.append(axis.annotate(outputstring,
+                                                   xy=(xdata, ydata), xycoords='data',
+                                                   xytext=(xdata+labelshiftx, ydata+labelshifty), textcoords='data',
+                                                   arrowprops=dict(arrowstyle="-|>",
+                                                                   connectionstyle="arc3"),
+                                                                   bbox=dict(boxstyle="round", fc="w"),
+                                                   ))
         self.fig.canvas.draw()
