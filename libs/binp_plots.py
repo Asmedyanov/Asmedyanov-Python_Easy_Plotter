@@ -129,21 +129,23 @@ class Embaded_Plot:
         """Очистить график"""
         self.fig.clf()  # Очистить график
         self.data = dict()  # Очистить список каналов графика
+        self.clear_annotations()
         self.fig.canvas.draw()  # Нарисовать пустой график
+
+    def clear_annotations(self):
+        if len(self.textlist) == 0:
+            return
+        for k in self.textlist:
+            k.remove()
+        self.textlist = []
+        
 
     def activate_interactiv(self, master):
         if (self.interactive_flag == 0):
-            if len(self.textlist) == 0:
-                return
-            for k in self.textlist:
-                k.remove()
+            self.clear_annotations()
             self.fig.canvas.mpl_disconnect(self.id_click)
             self.fig.canvas.draw()
             return
-        self.textlist = []
-        # for axis in self.fig.axes:
-        #self.textlist.append(axis.text(0, 0, "Interactive"))
-        # self.fig.canvas.draw()
         # Рисовать график
         self.id_click = self.fig.canvas.mpl_connect(
             'button_press_event',
@@ -151,19 +153,23 @@ class Embaded_Plot:
                 self.on_click(event, master))
 
     def on_click(self, event, master):
-        if event.dblclick!=1:return
+        if event.dblclick != 1:
+            return
         xdata = float(getattr(event, 'xdata'))
         ydata = float(getattr(event, 'ydata'))
-        outputstring = '( %3.2e , %3.2e )' % (xdata, ydata)
+        outputstring = '№ %d ( %3.2e , %3.2e )' % (
+            len(self.textlist)+1, xdata, ydata)
         for axis in self.fig.axes:
             if axis == event.inaxes:
-                labelshiftx=(axis.get_xlim()[1]-axis.get_xlim()[0])*0.05
-                labelshifty=(axis.get_ylim()[1]-axis.get_ylim()[0])*0.05
+                labelshiftx = (axis.get_xlim()[1]-axis.get_xlim()[0])*0.05
+                labelshifty = (axis.get_ylim()[1]-axis.get_ylim()[0])*0.05
                 self.textlist.append(axis.annotate(outputstring,
-                                                   xy=(xdata, ydata), xycoords='data',
+                                                   xy=(xdata,
+                                                       ydata), xycoords='data',
                                                    xytext=(xdata+labelshiftx, ydata+labelshifty), textcoords='data',
                                                    arrowprops=dict(arrowstyle="-|>",
                                                                    connectionstyle="arc3"),
-                                                                   bbox=dict(boxstyle="round", fc="w"),
+                                                   bbox=dict(
+                                                       boxstyle="round", fc="w"),
                                                    ))
         self.fig.canvas.draw()
