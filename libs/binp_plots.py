@@ -46,6 +46,8 @@ class Embaded_Plot:
         self.have_start = False
         self.interactive_flag = False
         self.textlist = []
+        self.output_flag=True
+        self.stat_flag=False
 
     def replot(self):
         self.clear_annotations()
@@ -53,13 +55,18 @@ class Embaded_Plot:
             self.replot_stack()
         else:
             self.replot_legend()
+        if self.output_flag:
+            self.fig.canvas.draw()
 
     def replot_legend(self):
         """Перестроить график"""
         self.fig.clf()  # Очистить график
         self.fig.subplots(1)
         for k, v in self.data.items():
-            self.fig.axes[0].plot(v['T'], v['V'], label=k)
+            if self.stat_flag:
+                self.fig.axes[0].errorbar(v['T_avg'],v['V_avg'],v['T_std'],v['V_std'],label=k)
+            else:
+                self.fig.axes[0].plot(v['T'], v['V'],fmt='-o', label=k)
         self.fig.axes[0].legend()
         self.fig.axes[0].grid()
         # Подписать горизонтальную ось
@@ -68,7 +75,7 @@ class Embaded_Plot:
             self.tit["Заголовок"]+self.tit['Префикс'])  # Подписать заголовок
         self.fig.axes[0].set_ylabel("У. Е.")  # Подписать вертикальные оси
         self.fig.axes[0].ticklabel_format(style='sci')
-        self.fig.canvas.draw()
+        
 
     def replot_stack(self):
         """Перестроить график"""
@@ -86,7 +93,10 @@ class Embaded_Plot:
             data_t = self.data[k]  # ВрЕменная база данных
             i = list(self.data.keys()).index(k)
             # Построить каждый канал в соостветствующем графике
-            axes[i].plot(data_t['T'], data_t['V'])
+            if self.stat_flag:
+                axes[i].errorbar(data_t['T_avg'],data_t['V_avg'],data_t['T_std'],data_t['V_std'],fmt='-o')
+            else:
+                axes[i].plot(data_t['T'], data_t['V'])
             # Включить вспомогательные засечки на шкалах
             axes[i].minorticks_on()
 
@@ -107,8 +117,6 @@ class Embaded_Plot:
         axes[n-1].set_xlabel(self.tit['Подпись X'])
         # Подписать заголовок
         axes[0].set_title(self.tit["Заголовок"]+self.tit['Префикс'])
-
-        self.fig.canvas.draw()  # Рисовать график
 
     def plot(self, key, data):
         if self.have_start:

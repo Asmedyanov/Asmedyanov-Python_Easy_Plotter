@@ -13,7 +13,7 @@ names_file_masks = [
     ['A*.CSV', Open_A_CSV, ['Запуск','P, V']],
     ['F*CH1.CSV', Open_F_CSV, ['I, V']],
     ['T*.CSV', Open_F_CSV, ['I, V']],
-    ['*.PRN', Open_PRN, ['Запуск','I, V']],
+    ['*.PRN', Open_PRN, ['Запуск','Iсум, V','iдаль, V','Uблиз, V']],
     ['*.bin', Open_bin, ['ne, V', 'U, kV', 'I, kA', 'Tr 1, %', 'Tr 2, %']],
 ]
 

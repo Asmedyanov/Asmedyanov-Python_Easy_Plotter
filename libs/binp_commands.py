@@ -36,6 +36,7 @@ def get_filename(master):
     master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
 
 def Add_File_str(master, file_name):
+    master.array_plots["График файла"].stat_flag=False
     short_file_name = file_name.split('/')[-1]
     for k in cnst.names_file_masks:
         if fnmatch.fnmatch(short_file_name, k[0]):
@@ -104,7 +105,7 @@ def Group_directory(master):
     os.chdir(dir_name)
     for name in os.listdir():
         numlist = re.findall(r'\d*\.\d+|\d+', name)
-        n_exper = int(numlist[0])  # +int(name[0]=='F')
+        n_exper = int(numlist[0])
         if len(numlist) == 0:
             continue
         os.makedirs('V'+str(n_exper), exist_ok=True)
@@ -152,7 +153,7 @@ def Process_data_pmi27(data,dataout):
                 dataout['Pressure_pic_time'].append(float(Pressure_pic_time))
 
 def Process_plot_pmi27(stattable, master):
-    argument_key='Current_position'
+    argument_key='Current_length'
     function_keys=['Pressure_pic_amplitude','Pressure_pic_time']
     stattable= stattable.sort_values(argument_key)
     for mykey in function_keys:
@@ -161,6 +162,74 @@ def Process_plot_pmi27(stattable, master):
         data['V']=stattable[mykey]
         master.array_plots["График файла"].plot(mykey, data)
     master.array_plots["График файла"].replot()
+
+def Statistic_plot_pmi27(stattable,master):
+    argument_key='Current_length'
+    stattable= stattable.sort_values('Num')
+    stattable.index=stattable['Num']
+    refval=dict()
+    deltalist=['Pressure_pic_amplitude','Pressure_pic_time']
+    for mykey in deltalist:
+        refval[mykey]=0
+        stattable[mykey+'_delta']=0
+    for i in stattable['Num']:
+        for mykey in deltalist:
+            if stattable[argument_key][i]==0: refval[mykey]=stattable[mykey][i]
+            stattable[mykey+'_delta'][i]=stattable[mykey][i]-refval[mykey]
+    statlist=['_avg','_std']
+    statkeys=['Current_length','Pressure_pic_amplitude_delta','Pressure_pic_time_delta']
+    statSubset=dict()
+    statSubsettemp=dict()
+    for mykey in statkeys:
+        statSubset[mykey]=list()
+        statSubsettemp[mykey]=list()
+    #Выполним разбиение на подмассивы
+    Nzeros=4
+    Countzeros=0
+    for i in stattable['Num']:
+        if stattable[argument_key][i]==0:
+            if (i!=stattable['Num'].max())&(stattable[argument_key][i+1]==0):
+                continue
+            if Countzeros==Nzeros:
+                Countzeros=0
+                for mykey in statkeys:
+                    statSubset[mykey].append(statSubsettemp[mykey])
+                    statSubsettemp[mykey]=list()
+            Countzeros+=1
+        else:
+            for mykey in statkeys:
+                statSubsettemp[mykey].append(stattable[mykey][i])
+            if i==stattable['Num'].max():
+                for mykey in statkeys:
+                    statSubset[mykey].append(statSubsettemp[mykey])
+                    statSubsettemp[mykey]=list()
+    
+    statDict=dict()
+    for mykey in statkeys:
+        statDict[mykey+'_avg']=list()
+        statDict[mykey+'_std']=list()
+        for sublist in statSubset[mykey]:
+            statDict[mykey+'_avg'].append(np.mean(sublist))
+            statDict[mykey+'_std'].append(np.std(sublist))
+    function_keys=['Pressure_pic_amplitude_delta','Pressure_pic_time_delta']
+    for mykey in function_keys:
+        data=pd.DataFrame()
+        for st in statlist:
+            data['T'+st]=statDict[argument_key+st]
+            data['V'+st]=statDict[mykey+st]
+        master.array_plots["График файла"].plot(mykey, data)
+        print(data)
+    master.array_plots["График файла"].stat_flag=True
+    master.array_plots["График файла"].replot()
+    
+    return stattable
+
+    """ for mykey in function_keys:
+        data=pd.DataFrame()
+        data['T']=stattable[argument_key]
+        data['V']=stattable[mykey]
+        master.array_plots["График файла"].plot(mykey, data)
+    master.array_plots["График файла"].replot() """
     
         
 
@@ -180,13 +249,13 @@ def Process_directory(master):
     # Составить список выстрелов
     dataout_heads=['Num','Current_length','Current_position','Pressure_pic_amplitude','Pressure_pic_time']
     dataout={mykey:[] for mykey in dataout_heads}
-
+    master.array_plots["График файла"].output_flag=False
     for folder_name in os.listdir():
         numlist = re.findall(r'\d+', folder_name)
         if len(numlist) == 0:
             continue
         dataout['Num'].append(int(numlist[0]))
-        print(numlist[0])
+        master.array_parametrs["Имя файла"].print(numlist[0])
         cnst.names_plots["График файла"]['Префикс'] = folder_name.split(
             '/')[-1]
         master.array_plots["График файла"].tit = cnst.names_plots["График файла"]
@@ -198,14 +267,20 @@ def Process_directory(master):
         Clear_Plot(master)
         os.chdir(dir_outer)
 
+
     # создадим таблицу статистики
+    master.array_plots["График файла"].output_flag=True
     stattable = pd.DataFrame()
     for mykey in dataout_heads:
         stattable[mykey]=dataout[mykey]
-    Process_plot_pmi27(stattable, master)
+    #Process_plot_pmi27(stattable, master)
     os.chdir(dir_outer+'/STAT')
+    #stattable= stattable.sort_values('Num')
+    stattable=Statistic_plot_pmi27(stattable,master)
     stattable.to_csv('Statist.txt', sep=' ')
     os.chdir(dir_outer)
+    master.array_plots["График файла"].fig.savefig('Stat_Res')
+    print("Process is finished\n")
 
 
 def Norm_Plot(master):

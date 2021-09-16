@@ -23,7 +23,7 @@ def Open_A_CSV(a):
                        names=['T', 'V1', 'V2'])
     stmin = data['V1'].min()
     stmax = data['V1'].max()
-    st = 0.5*(stmax-stmin)
+    st = 0.5*(stmax+stmin)
     t0 = data['T'].loc[data['V1'] < st].values.min()*1.0e6
     data1 = pd.DataFrame()
     data1['T'] = data['T']*1.0e6-t0
@@ -69,7 +69,7 @@ def Open_PRN(a):
             data_t['T'] = data['T']
             data_t['V'] = data['CH'+str(k+1)]
             data_ret.append(data_t)
-    return [data_ret[0],data_ret[1]] 
+    return data_ret 
 
 
 def Open_bin(a):
