@@ -30,7 +30,7 @@ def Open_A_CSV(a):
     data1['V'] = data['V1']
     data2 = pd.DataFrame()
     data2['T'] = data['T']*1.0e6-t0
-    data2['V'] = data['V2']
+    data2['V'] = data['V2']*0.3
     return [data1, data2]
 
 def Open_F_CSV(a):
@@ -69,6 +69,10 @@ def Open_PRN(a):
             data_t['T'] = data['T']
             data_t['V'] = data['CH'+str(k+1)]
             data_ret.append(data_t)
+
+    data_ret[1]['V']*=50 #A/V
+    data_ret[2]['V']=1000*np.abs(data_ret[2]['V']) #A/V
+
     return data_ret 
 
 

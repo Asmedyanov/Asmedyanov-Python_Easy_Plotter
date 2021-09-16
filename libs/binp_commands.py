@@ -38,6 +38,8 @@ def get_filename(master):
 def Add_File_str(master, file_name):
     master.array_plots["График файла"].stat_flag=False
     short_file_name = file_name.split('/')[-1]
+    numlist = re.findall(r'\d+', short_file_name)
+    num=int(numlist[0])
     for k in cnst.names_file_masks:
         if fnmatch.fnmatch(short_file_name, k[0]):
             data = k[1](file_name)
@@ -45,7 +47,7 @@ def Add_File_str(master, file_name):
             for d in data:
                 d = Data_cut(master, d)
                 master.array_plots["График файла"].plot(
-                    k[2][nl]+' '+short_file_name, d)
+                    k[2][nl]+', #'+str(num), d)
                 nl += 1
 
 
@@ -136,7 +138,7 @@ def Start_or_No_Start_plot(master):
 def Process_data_pmi27(data,dataout):
     for key, v in data.items():
             if key[0] == 'I':
-                When_Current = v.loc[v['V'] > 1]
+                When_Current = v.loc[v['V'] > 5]
                 if len(When_Current) == 0:
                     dataout["Current_position"].append(0)
                     dataout["Current_length"].append(0)
@@ -147,37 +149,29 @@ def Process_data_pmi27(data,dataout):
             if key[0] == 'P':
                 When_Pressure = v.loc[((v['T'] > 2000) & (v['T'] < 8000))]
                 Pressure_pic_amplitude=np.max(When_Pressure['V'])
-                dataout['Pressure_pic_amplitude'].append(Pressure_pic_amplitude)
+                dataout['ampl$_{pic}$'].append(Pressure_pic_amplitude)
                 Pressure_pic_time = When_Pressure['T'].loc[When_Pressure['V']
                                                            == Pressure_pic_amplitude].min()
-                dataout['Pressure_pic_time'].append(float(Pressure_pic_time))
-
-def Process_plot_pmi27(stattable, master):
-    argument_key='Current_length'
-    function_keys=['Pressure_pic_amplitude','Pressure_pic_time']
-    stattable= stattable.sort_values(argument_key)
-    for mykey in function_keys:
-        data=pd.DataFrame()
-        data['T']=stattable[argument_key]
-        data['V']=stattable[mykey]
-        master.array_plots["График файла"].plot(mykey, data)
-    master.array_plots["График файла"].replot()
+                dataout['t$_{pic}$'].append(float(Pressure_pic_time))
 
 def Statistic_plot_pmi27(stattable,master):
     argument_key='Current_length'
     stattable= stattable.sort_values('Num')
     stattable.index=stattable['Num']
     refval=dict()
-    deltalist=['Pressure_pic_amplitude','Pressure_pic_time']
+    deltalist=['ampl$_{pic}$','t$_{pic}$']
     for mykey in deltalist:
-        refval[mykey]=0
-        stattable[mykey+'_delta']=0
+        refval[mykey]=0.0
+        stattable[mykey+'$_{\Delta}$']=0.0
     for i in stattable['Num']:
         for mykey in deltalist:
             if stattable[argument_key][i]==0: refval[mykey]=stattable[mykey][i]
-            stattable[mykey+'_delta'][i]=stattable[mykey][i]-refval[mykey]
+            if (i!=stattable['Num'].max()):
+                if (stattable[argument_key][i+1]==0):
+                    continue
+            stattable[mykey+'$_{\Delta}$'][i]=(stattable[mykey][i]*100.0-refval[mykey]*100.0)*0.01
     statlist=['_avg','_std']
-    statkeys=['Current_length','Pressure_pic_amplitude_delta','Pressure_pic_time_delta']
+    statkeys=['Current_length','ampl$_{pic}$$_{\Delta}$','t$_{pic}$$_{\Delta}$']
     statSubset=dict()
     statSubsettemp=dict()
     for mykey in statkeys:
@@ -188,8 +182,9 @@ def Statistic_plot_pmi27(stattable,master):
     Countzeros=0
     for i in stattable['Num']:
         if stattable[argument_key][i]==0:
-            if (i!=stattable['Num'].max())&(stattable[argument_key][i+1]==0):
-                continue
+            if (i!=stattable['Num'].max()):
+                if (stattable[argument_key][i+1]==0):
+                    continue
             if Countzeros==Nzeros:
                 Countzeros=0
                 for mykey in statkeys:
@@ -211,7 +206,7 @@ def Statistic_plot_pmi27(stattable,master):
         for sublist in statSubset[mykey]:
             statDict[mykey+'_avg'].append(np.mean(sublist))
             statDict[mykey+'_std'].append(np.std(sublist))
-    function_keys=['Pressure_pic_amplitude_delta','Pressure_pic_time_delta']
+    function_keys=['ampl$_{pic}$$_{\Delta}$','t$_{pic}$$_{\Delta}$']
     for mykey in function_keys:
         data=pd.DataFrame()
         for st in statlist:
@@ -221,16 +216,10 @@ def Statistic_plot_pmi27(stattable,master):
         print(data)
     master.array_plots["График файла"].stat_flag=True
     master.array_plots["График файла"].replot()
-    
+    master.array_plots["График файла"].fig.savefig('Stat_Res')
+    pd.DataFrame(statDict).to_csv('Statist_com.txt', sep=' ')
     return stattable
 
-    """ for mykey in function_keys:
-        data=pd.DataFrame()
-        data['T']=stattable[argument_key]
-        data['V']=stattable[mykey]
-        master.array_plots["График файла"].plot(mykey, data)
-    master.array_plots["График файла"].replot() """
-    
         
 
 
@@ -247,7 +236,7 @@ def Process_directory(master):
     os.makedirs('STAT', exist_ok=True)
 
     # Составить список выстрелов
-    dataout_heads=['Num','Current_length','Current_position','Pressure_pic_amplitude','Pressure_pic_time']
+    dataout_heads=['Num','Current_length','Current_position','ampl$_{pic}$','t$_{pic}$']
     dataout={mykey:[] for mykey in dataout_heads}
     master.array_plots["График файла"].output_flag=False
     for folder_name in os.listdir():
@@ -279,7 +268,6 @@ def Process_directory(master):
     stattable=Statistic_plot_pmi27(stattable,master)
     stattable.to_csv('Statist.txt', sep=' ')
     os.chdir(dir_outer)
-    master.array_plots["График файла"].fig.savefig('Stat_Res')
     print("Process is finished\n")
 
 

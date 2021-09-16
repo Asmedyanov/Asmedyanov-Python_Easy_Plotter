@@ -64,9 +64,9 @@ class Embaded_Plot:
         self.fig.subplots(1)
         for k, v in self.data.items():
             if self.stat_flag:
-                self.fig.axes[0].errorbar(v['T_avg'],v['V_avg'],v['T_std'],v['V_std'],label=k)
+                self.fig.axes[0].errorbar(v['T_avg'],v['V_avg'],v['V_std'],v['T_std'],fmt='-o',label=k)
             else:
-                self.fig.axes[0].plot(v['T'], v['V'],fmt='-o', label=k)
+                self.fig.axes[0].plot(v['T'], v['V'], label=k)
         self.fig.axes[0].legend()
         self.fig.axes[0].grid()
         # Подписать горизонтальную ось
@@ -94,7 +94,7 @@ class Embaded_Plot:
             i = list(self.data.keys()).index(k)
             # Построить каждый канал в соостветствующем графике
             if self.stat_flag:
-                axes[i].errorbar(data_t['T_avg'],data_t['V_avg'],data_t['T_std'],data_t['V_std'],fmt='-o')
+                axes[i].errorbar(data_t['T_avg'],data_t['V_avg'],data_t['V_std'],data_t['T_std'],fmt='-o')
             else:
                 axes[i].plot(data_t['T'], data_t['V'])
             # Включить вспомогательные засечки на шкалах
@@ -126,7 +126,7 @@ class Embaded_Plot:
 
     def plot_no_start(self, key, data):
         """Пристроить канал к графику"""
-        if key.split(' ')[0] == "Запуск":
+        if key.split(',')[0] == "Запуск":
             return
         self.data[key] = data  # добавить таблицу канала в список каналов
 
