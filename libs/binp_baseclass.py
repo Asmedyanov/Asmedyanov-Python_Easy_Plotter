@@ -12,11 +12,13 @@ from libs.binp_plots import *  # Модуль графиков
 from libs.binp_parametrs import *  # модуль параметров
 
 
-class Oscilloscop:  # базовый класс
-    def __init__(self, master):
-        self.menubar=Menu(master)
+class BaseClass(Tk):  # базовый класс
+    def __init__(self, title=''):
+        super(BaseClass, self).__init__()
+        self.wm_title(title)
+        self.menubar = Menu(self)
 
-        self.filemenu=Menu(self.menubar)
+        self.filemenu = Menu(self.menubar)
         for k in names_commands_file.keys():
             self.filemenu.add_command(
                 label=k,
@@ -24,7 +26,7 @@ class Oscilloscop:  # базовый класс
                 accelerator=names_commands_file[k][1])
         self.menubar.add_cascade(label="Файл", menu=self.filemenu)
 
-        self.plotmenu=Menu(self.menubar)
+        self.plotmenu = Menu(self.menubar)
         for k in names_commands_plot.keys():
             self.plotmenu.add_command(
                 label=k,
@@ -32,25 +34,28 @@ class Oscilloscop:  # базовый класс
                 accelerator=names_commands_plot[k][1])
         self.menubar.add_cascade(label="График", menu=self.plotmenu)
 
-        master.config(menu=self.menubar)
+        self.config(menu=self.menubar)
         for mykey in names_commands_file.keys():
-            self.filemenu.bind_all(names_commands_file[mykey][2],lambda event, mykey=mykey:names_commands_file[mykey][0](self))
+            self.filemenu.bind_all(names_commands_file[mykey][2],
+                                   lambda event, mykey=mykey: names_commands_file[mykey][0](self))
         for mykey in names_commands_plot.keys():
-            self.plotmenu.bind_all(names_commands_plot[mykey][2],lambda event, mykey=mykey:names_commands_plot[mykey][0](self))
+            self.plotmenu.bind_all(names_commands_plot[mykey][2],
+                                   lambda event, mykey=mykey: names_commands_plot[mykey][0](self))
         # массив рамок в окне интерфейса
         self.array_frames = {k: LabelFrame(
-            master, text=k) for k in names_frames}
+            self, text=k) for k in names_frames}
         self.array_plots = {k: Embaded_Plot(
-            self.array_frames["Окно графиков"], v) for k,v in names_plots.items()}  # массив графиков
+            self.array_frames["Окно графиков"], v) for k, v in names_plots.items()}  # массив графиков
         self.array_parametrs = {k: Parametr(
-            self.array_frames["Окно параметров"], [k]+v) for k,v in names_parametrs.items()}  # массив параметров
-        self.check_values={k: IntVar(0) for k in names_checks.keys()}
-        self.array_checks={k: Checkbutton(
-            self.array_frames["Окно параметров"],text=k, command=lambda v=v:v(self), variable=self.check_values[k]
-        ) for k,v in names_checks.items()}
+            self.array_frames["Окно параметров"], [k] + v) for k, v in names_parametrs.items()}  # массив параметров
+        self.check_values = {k: IntVar(0) for k in names_checks.keys()}
+        self.array_checks = {k: Checkbutton(
+            self.array_frames["Окно параметров"], text=k, command=lambda v=v: v(self), variable=self.check_values[k]
+        ) for k, v in names_checks.items()}
         for k in self.array_checks.values():
-            k.pack(side=LEFT,fill=X)
+            k.pack(side=LEFT, fill=X)
         self.full_file_name = ''
         for k in self.array_frames.values():
             k.pack(side=LEFT, fill=BOTH)
         self.array_frames["Окно графиков"].pack(side=TOP, fill=BOTH, expand=1)
+        mainloop()
